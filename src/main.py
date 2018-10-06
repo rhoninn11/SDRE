@@ -1,5 +1,6 @@
 import math
 import sympy as sp
+import sympy.printing.latex as spltx
 
 
 def calculate_kinetic_energy(rotation_speed: sp.Matrix, linear_speed: sp.Matrix,
@@ -31,17 +32,15 @@ def calculate_potential_energy(mass, gravity: sp.Matrix, zdh_matrix: sp.Matrix, 
 
 
 def calculate_coriolis_matrix(mass_matrix: sp.Matrix, state_coordinates: sp.Matrix, state_coordinates_prims: sp.Matrix):
-    coriolis_matrix = sp.ImmutableDenseMatrix(sp.zeros(3))
-
+    coriolis_matrix = sp.zeros(3)
     for k in range(0, mass_matrix.cols):
         for j in range(0, mass_matrix.rows):
             for i in range(0, state_coordinates.rows):
-                print(k, j, i)
-                coriolis_matrix[k, j] += (mass_matrix[k, j].diff(state_coordinates[i]) +
-                                          mass_matrix[k, i].diff(state_coordinates[j]) -
-                                          mass_matrix[i, j].diff(state_coordinates[k])) * state_coordinates_prims[i]
-                # coriolis_matrix[k, j] = temp
-
+                temp_matrix = sp.zeros(3)
+                temp_matrix[k, j] = (mass_matrix[k, j].diff(state_coordinates[i]) +
+                                     mass_matrix[k, i].diff(state_coordinates[j]) -
+                                     mass_matrix[i, j].diff(state_coordinates[k])) * state_coordinates_prims[i]
+                coriolis_matrix += temp_matrix
     return coriolis_matrix
 
 
@@ -382,6 +381,8 @@ M = sp.Matrix([[m11, m12, m13], [m21, m22, m23], [m31, m32, m33]])
 # sp.pprint(M)
 
 
-sp.pprint(M[0, 0].diff(cords[0]))
-# sp.pprint(cords)
-calculate_coriolis_matrix(M, cords, cords_prim)
+C = calculate_coriolis_matrix(M, cords, cords_prim)
+
+# file = open('coriolis_matrix.tex', 'w+')
+# file.write(sp.latex(C))
+# file.close()
