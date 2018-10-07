@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="38ee5c6e-4b4e-4b00-afbc-d7a86ec42325" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/SDRE.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SDRE.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
@@ -71,20 +69,34 @@
     <session id="373502760">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.0" value="1" />
+          <entry key="project.open.time.6" value="2" />
+          <entry key="project.open.time.7" value="1" />
+          <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="148" />
-          <entry key="py" value="676" />
+          <entry key="py" value="2012" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="824" />
+          <entry key="Python" value="2160" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="py" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Python" value="1" />
         </counts>
       </usages-collector>
     </session>
@@ -94,10 +106,22 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="691">
-              <caret line="384" lean-forward="true" selection-start-line="384" selection-end-line="384" />
+            <state relative-caret-position="351">
+              <caret line="361" lean-forward="true" selection-start-line="361" selection-end-line="361" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
+                <element signature="e#242#816#0" />
+                <element signature="e#927#1321#0" />
+                <element signature="e#1528#1988#0" />
+                <element signature="e#2116#2466#0" />
+                <element signature="e#2200#2726#0" />
+                <element signature="e#2972#3613#0" />
+                <element signature="e#3688#4399#0" />
+                <element signature="e#4420#4942#0" />
+                <element signature="e#4963#5440#0" />
+                <marker date="1538920004510" expanded="true" signature="1468:2584" ph="..." />
+                <marker date="1538920004510" expanded="true" signature="3371:3698" ph="..." />
+                <marker date="1538920004510" expanded="true" signature="12178:12179" ph="..." />
               </folding>
             </state>
           </provider>
@@ -156,7 +180,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -168,11 +191,12 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -229,14 +253,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="25" width="1922" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22502685" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23791622" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32942554" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49925372" visible="true" weight="0.4829483" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49925372" visible="true" weight="0.3740374" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39933994" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -249,7 +272,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="R Graphics" order="3" />
-      <window_info anchor="right" id="R Packages" order="4" />
+      <window_info anchor="right" id="R Packages" order="4" visible="true" weight="0.0" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -258,10 +281,22 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="691">
-          <caret line="384" lean-forward="true" selection-start-line="384" selection-end-line="384" />
+        <state relative-caret-position="351">
+          <caret line="361" lean-forward="true" selection-start-line="361" selection-end-line="361" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#242#816#0" />
+            <element signature="e#927#1321#0" />
+            <element signature="e#1528#1988#0" />
+            <element signature="e#2116#2466#0" />
+            <element signature="e#2200#2726#0" />
+            <element signature="e#2972#3613#0" />
+            <element signature="e#3688#4399#0" />
+            <element signature="e#4420#4942#0" />
+            <element signature="e#4963#5440#0" />
+            <marker date="1538920004510" expanded="true" signature="1468:2584" ph="..." />
+            <marker date="1538920004510" expanded="true" signature="3371:3698" ph="..." />
+            <marker date="1538920004510" expanded="true" signature="12178:12179" ph="..." />
           </folding>
         </state>
       </provider>

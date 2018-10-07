@@ -31,6 +31,35 @@ def calculate_potential_energy(mass, gravity: sp.Matrix, zdh_matrix: sp.Matrix, 
     return potential_energy
 
 
+def calculate_mass_matrix(lagrangian, state_coordinates: sp.Matrix, state_coodinates_prims: sp.Matrix,
+                          count: int, t):
+    state_coordinates_bis = sp.zeros(count, 1)
+    lagrangian_diff_by_cords_prims_and_t = sp.zeros(count, 1)
+    lagrangian_diff_by_cords = sp.zeros(count, 1)
+    mass_matrix = sp.zeros(3)
+
+    valid_shape = state_coordinates.shape == tuple([count, 1]) and state_coodinates_prims.shape == tuple([count, 1])
+    if not valid_shape:
+        raise ValueError('Not valid parameters')
+
+    for i in range(0, count):
+        state_coordinates_bis[i] = state_coodinates_prims[i].diff(t)
+        lagrangian_diff_by_cords_prims_and_t[i] = lagrangian.diff(cords_prim[i]).diff(t)
+        lagrangian_diff_by_cords[i] = lagrangian.diff(cords[i])
+
+    for i in range(0, count):
+        for j in range(0, count):
+            temp = lagrangian_diff_by_cords_prims_and_t[i].subs(state_coordinates_bis[j], 1)
+            temp = temp.subs(state_coodinates_prims[j], 0)
+            for k in range(0, count):
+                if not k == j:
+                    temp = temp.subs(state_coordinates_bis[k], 0)
+                    temp = temp.subs(state_coodinates_prims[k], 0)
+            mass_matrix[i, j] = temp
+
+    return mass_matrix
+
+
 def calculate_coriolis_matrix(mass_matrix: sp.Matrix, state_coordinates: sp.Matrix, state_coordinates_prims: sp.Matrix):
     coriolis_matrix = sp.zeros(3)
     for k in range(0, mass_matrix.cols):
@@ -42,6 +71,19 @@ def calculate_coriolis_matrix(mass_matrix: sp.Matrix, state_coordinates: sp.Matr
                                      mass_matrix[i, j].diff(state_coordinates[k])) * state_coordinates_prims[i]
                 coriolis_matrix += temp_matrix
     return coriolis_matrix
+
+
+def calculate_gravitation_vector(potential_energy, state_coordinates: sp.Matrix, count: int):
+    gravitation_vector = sp.zeros(count, 1)
+
+    valid_shape = state_coordinates.shape == tuple([count, 1])
+    if not valid_shape:
+        raise ValueError('Not valid matrices shapes')
+
+    for i in range(0, count):
+        gravitation_vector[i] = potential_energy.diff(state_coordinates[i])
+
+    return gravitation_vector
 
 
 def calculate_zdh_rotation_speed(previous_rotation_speed: sp.Matrix, zdh_matrix: sp.Matrix,
@@ -234,9 +276,9 @@ I2 = sp.Matrix([[I2xx, 0, 0],
 I3 = sp.Matrix([[I3xx, 0, 0],
                 [0, I3yy, 0],
                 [0, 0, I3zz]])
-I4 = sp.Matrix([[I4xx, 0, 0],
-                [0, I4yy, 0],
-                [0, 0, I4zz]])
+# I4 = sp.Matrix([[I4xx, 0, 0],
+#                 [0, I4yy, 0],
+#                 [0, 0, I4zz]])
 
 c1z = sp.Symbol('c1z')
 c2x = sp.Symbol('c2x')
@@ -245,7 +287,7 @@ c3x = sp.Symbol('c3x')
 c1 = sp.Matrix([0, 0, c1z])
 c2 = sp.Matrix([c2x, 0, 0])
 c3 = sp.Matrix([c3x, 0, 0])
-c4 = sp.Matrix([0, 0, 0])
+# c4 = sp.Matrix([0, 0, 0])
 
 g = sp.Symbol('g')
 gravity = sp.Matrix([0, 0, g])
@@ -253,12 +295,12 @@ gravity = sp.Matrix([0, 0, g])
 Ek1 = calculate_kinetic_energy(omega_1in1, v_1in1, I1, c1, m1)
 Ek2 = calculate_kinetic_energy(omega_2in2, v_2in2, I2, c2, m2)
 Ek3 = calculate_kinetic_energy(omega_3in3, v_3in3, I3, c3, m3)
-Ek4 = calculate_kinetic_energy(omega_4in4, v_4in4, I4, c4, m4)
+# Ek4 = calculate_kinetic_energy(omega_4in4, v_4in4, I4, c4, m4)
 
 Ep1 = calculate_potential_energy(m1, gravity, t_1in0, c1)
 Ep2 = calculate_potential_energy(m2, gravity, t_2in0, c2)
 Ep3 = calculate_potential_energy(m3, gravity, t_3in0, c3)
-Ep4 = calculate_potential_energy(m4, gravity, t_4in0, c4)
+# Ep4 = calculate_potential_energy(m4, gravity, t_4in0, c4)
 
 # print('kinetic energy 1-------------------------------------------')
 # sp.pprint(Ek1)
@@ -278,8 +320,8 @@ Ep4 = calculate_potential_energy(m4, gravity, t_4in0, c4)
 # print('potential energy 4-------------------------------------------')
 # sp.pprint(Ep4)
 
-Ekc = Ek1 + Ek2 + Ek3 + Ek4
-Epc = Ep1 + Ep2 + Ep3 + Ep4
+Ekc = Ek1 + Ek2 + Ek3 # + Ek4
+Epc = Ep1 + Ep2 + Ep3 # + Ep4
 
 L = Ekc - Epc
 
@@ -291,94 +333,10 @@ q2_prim = q2.diff(t)
 q3_prim = q3.diff(t)
 cords_prim = sp.Matrix([q1_prim, q2_prim, q3_prim])
 
-q1_bis = q1_prim.diff(t)
-q2_bis = q2_prim.diff(t)
-q3_bis = q3_prim.diff(t)
+M = calculate_mass_matrix(L, cords, cords_prim, 3, t)
 
-L_q1_prim_t = L.diff(q1_prim).diff(t)
-L_q2_prim_t = L.diff(q2_prim).diff(t)
-L_q3_prim_t = L.diff(q3_prim).diff(t)
-
-# print('L _q3_prim po t - -----------------')
-# sp.pprint(L_q3_prim_t)
-
-L_q1 = L.diff(q1)
-L_q2 = L.diff(q2)
-L_q3 = L.diff(q3)
-
-# M MATRIX FIRST ROW
-m11 = L_q1_prim_t.subs(q2_bis, 0)
-m11 = m11.subs(q3_bis, 0)
-m11 = m11.subs(q2_prim, 0)
-m11 = m11.subs(q3_prim, 0)
-m11 = m11.subs(q1_bis, 1)
-m11 = m11.subs(q1_prim, 0)
-
-m12 = L_q1_prim_t.subs(q1_bis, 0)
-m12 = m12.subs(q3_bis, 0)
-m12 = m12.subs(q1_prim, 0)
-m12 = m12.subs(q3_prim, 0)
-m12 = m12.subs(q2_bis, 1)
-m12 = m12.subs(q2_prim, 0)
-
-m13 = L_q1_prim_t.subs(q1_bis, 0)
-m13 = m13.subs(q2_bis, 0)
-m13 = m13.subs(q1_prim, 0)
-m13 = m13.subs(q2_prim, 0)
-m13 = m13.subs(q3_bis, 1)
-m13 = m13.subs(q3_prim, 0)
-
-# M MATRIX SECOND ROW
-m21 = L_q2_prim_t.subs(q2_bis, 0)
-m21 = m21.subs(q3_bis, 0)
-m21 = m21.subs(q2_prim, 0)
-m21 = m21.subs(q3_prim, 0)
-m21 = m21.subs(q1_bis, 1)
-m21 = m21.subs(q2_prim, 0)
-
-m22 = L_q2_prim_t.subs(q1_bis, 0)
-m22 = m22.subs(q3_bis, 0)
-m22 = m22.subs(q1_prim, 0)
-m22 = m22.subs(q3_prim, 0)
-m22 = m22.subs(q2_bis, 1)
-m22 = m22.subs(q2_prim, 0)
-
-m23 = L_q2_prim_t.subs(q2_bis, 0)
-m23 = m23.subs(q3_bis, 0)
-m23 = m23.subs(q2_prim, 0)
-m23 = m23.subs(q3_prim, 0)
-m23 = m23.subs(q1_bis, 1)
-m23 = m23.subs(q1_prim, 0)
-
-# M Matrix THIRD ROW
-m31 = L_q3_prim_t.subs(q2_bis, 0)
-m31 = m31.subs(q3_bis, 0)
-m31 = m31.subs(q2_prim, 0)
-m31 = m31.subs(q3_prim, 0)
-m31 = m31.subs(q1_bis, 1)
-m31 = m31.subs(q1_prim, 0)
-# print('----------m31----------')
-# sp.pprint(m31)
-
-m32 = L_q3_prim_t.subs(q1_bis, 0)
-m32 = m32.subs(q3_bis, 0)
-m32 = m32.subs(q1_prim, 0)
-m32 = m32.subs(q3_prim, 0)
-m32 = m32.subs(q2_bis, 1)
-m32 = m32.subs(q2_prim, 0)
-
-m33 = L_q3_prim_t.subs(q1_bis, 0)
-m33 = m33.subs(q2_bis, 0)
-m33 = m33.subs(q1_prim, 0)
-m33 = m33.subs(q2_prim, 0)
-m33 = m33.subs(q3_bis, 1)
-m33 = m33.subs(q3_prim, 0)
-# print('----------m33----------')
-# sp.pprint(m33)
-
-M = sp.Matrix([[m11, m12, m13], [m21, m22, m23], [m31, m32, m33]])
-# print('----------chwila prawdy----------')
-# sp.pprint(M)
+print('----------chwila prawdy----------')
+sp.pprint(M)
 
 
 C = calculate_coriolis_matrix(M, cords, cords_prim)
@@ -386,3 +344,18 @@ C = calculate_coriolis_matrix(M, cords, cords_prim)
 # file = open('coriolis_matrix.tex', 'w+')
 # file.write(sp.latex(C))
 # file.close()
+
+
+G = calculate_gravitation_vector(Epc, cords, 3)
+# sp.pprint(G)
+
+x1 = cords
+x2 = x1_prim = cords_prim
+
+# x1' = x2
+# M(x1)x2' + C(x1,x2){x2} + G(x1) = u
+
+# M_inversed = M.inv()
+# sp.pprint(M_inversed)
+
+# podstawienie zmiennych do modelu
