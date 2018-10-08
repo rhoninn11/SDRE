@@ -52,7 +52,7 @@ class Robot:
         self.calculate_lagrangian()
 
         self.M = calculate_mass_matrix(self.L, self.cords, self.cords_prim, self.links_number, self.t)
-        self.C = calculate_coriolis_matrix(self.M, self.cords, self.cords_prim,self.links_number)
+        self.C = calculate_coriolis_matrix(self.M, self.cords, self.cords_prim, self.links_number)
         self.G = calculate_gravitation_vector(self.Epc, self.cords, self.links_number)
 
     def define_cords(self):
@@ -134,3 +134,11 @@ class Robot:
         for i in range(0, len(self.transformation_matrices_in_base)):
             print('-------------------T matrix ' + str(i + 1) + ' in ' + str(0) + '------------------------')
             sp.pprint(self.transformation_matrices_in_base[i])
+
+    def print_veocitioes(self):
+        for i in range(0, len(self.omegas)):
+            print('------------------ omega ' + str(i) + ' in ' + str(i) + '------------------------')
+            sp.pprint(self.omegas[i])
+        for i in range(0, len(self.velocities)):
+            print('-------------------v ' + str(i) + ' in ' + str(i) + '------------------------')
+            sp.pprint(self.velocities[i])

@@ -21,9 +21,9 @@ c1 = sp.Matrix([0, 0, sp.Symbol('c1z')])
 c2 = sp.Matrix([0, 0, sp.Symbol('c2z')])
 c3 = sp.Matrix([0, 0, sp.Symbol('c3z')])
 # theta, alpha , a , d
-link1 = Link(q1, 0.0, 0.0, q1, 1, c1)
-link2 = Link(q2, -math.pi/2.0, a1, 0.0, 2, c2)
-link3 = Link(0.0, 0.0, 0.0, 0, 3, c3)
+link1 = Link(q1, 0.0, 0.0, 0.0, 1, c1)
+link2 = Link(q2, -math.pi/2.0, 0.0, 0.0, 2, c2)
+link3 = Link(0.0, 0.0, q1, 0.0, 3, c3)
 
 my_robot = Robot(t)
 my_robot.add_link(link1)
@@ -34,6 +34,8 @@ my_robot.calculate_dynamics()
 
 my_robot.print_transofrmation_matrices()
 my_robot.print_transofrmation_matrices_in_base()
+
+my_robot.print_veocitioes()
 
 my_robot.print_dynamics()
 
