@@ -2,6 +2,7 @@ import sympy as sp
 from robot_utilities import c, s
 from Link import *
 
+
 #  lagrangian function
 #  matrices T0in1 T0in2 ...
 
@@ -115,7 +116,7 @@ def calculate_mass_matrix(lagrangian, state_coordinates: sp.Matrix, state_coodin
     state_coordinates_bis = sp.zeros(count, 1)
     lagrangian_diff_by_cords_prims_and_t = sp.zeros(count, 1)
     lagrangian_diff_by_cords = sp.zeros(count, 1)
-    mass_matrix = sp.zeros(3)
+    mass_matrix = sp.zeros(count)
 
     valid_shape = state_coordinates.shape == tuple([count, 1]) and state_coodinates_prims.shape == tuple([count, 1])
     if not valid_shape:
@@ -139,15 +140,16 @@ def calculate_mass_matrix(lagrangian, state_coordinates: sp.Matrix, state_coodin
     return mass_matrix
 
 
-def calculate_coriolis_matrix(mass_matrix: sp.Matrix, state_coordinates: sp.Matrix, state_coordinates_prims: sp.Matrix):
-    coriolis_matrix = sp.zeros(3)
+def calculate_coriolis_matrix(mass_matrix: sp.Matrix, state_coordinates: sp.Matrix, state_coordinates_prims: sp.Matrix,
+                              count: int):
+    coriolis_matrix = sp.zeros(count)
     for k in range(0, mass_matrix.cols):
         for j in range(0, mass_matrix.rows):
             for i in range(0, state_coordinates.rows):
-                temp_matrix = sp.zeros(3)
-                temp_matrix[k, j] = (mass_matrix[k, j].diff(state_coordinates[i]) +
-                                     mass_matrix[k, i].diff(state_coordinates[j]) -
-                                     mass_matrix[i, j].diff(state_coordinates[k])) * state_coordinates_prims[i]
+                temp_matrix = sp.zeros(count)
+                temp_matrix[k, j] = 0.5 * (mass_matrix[k, j].diff(state_coordinates[i]) +
+                                           mass_matrix[k, i].diff(state_coordinates[j]) -
+                                           mass_matrix[i, j].diff(state_coordinates[k])) * state_coordinates_prims[i]
                 coriolis_matrix += temp_matrix
     return coriolis_matrix
 

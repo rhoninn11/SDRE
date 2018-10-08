@@ -17,21 +17,24 @@ class Link:
     mass = 0
     inertial_tensor = 0
 
-    def __init__(self, theta, alpha, a, d, i):
+    def __init__(self, theta, alpha, a, d, i, mass_center=None):
         self.theta = theta
         self.alpha = alpha
         self.d = d
         self.a = a
-        self.mass = sp.Symbol('m'+i)
-        self.Ixx = sp.Symbol('I' + i + 'xx')
-        self.Iyy = sp.Symbol('I' + i + 'yy')
-        self.Izz = sp.Symbol('I' + i + 'zz')
-        self.intertial_tensor = sp.Matrix([self.Ixx, 0, 0], [0, self.Iyy, 0], [0, 0, self.Izz])
-        self.mass_center = sp.Matrix([0, 0, 0])
+        self.mass = sp.Symbol('m' + str(i))
+        self.Ixx = sp.Symbol('I' + str(i) + 'xx')
+        self.Iyy = sp.Symbol('I' + str(i) + 'yy')
+        self.Izz = sp.Symbol('I' + str(i) + 'zz')
+        self.inertial_tensor = sp.Matrix([[self.Ixx, 0, 0], [0, self.Iyy, 0], [0, 0, self.Izz]])
+        if type(mass_center) == sp.Matrix:
+            self.mass_center = mass_center
+        else:
+            self.mass_center = sp.Matrix([0, 0, 0])
 
         if type(type(theta)) == sp.function.UndefinedFunction:
-            type = LinkType.rotational
+            self.type = LinkType.rotational
         elif type(type(d)) == sp.function.UndefinedFunction:
-            type = LinkType.linear
+            self.type = LinkType.linear
         else:
-            type = LinkType.none
+            self.type = LinkType.none
