@@ -1,8 +1,87 @@
 import sympy as sp
+from robot_utilities import c, s
+from Link import *
+
+#  lagrangian function
+#  matrices T0in1 T0in2 ...
+
+
+def calculate_zdh_matrix(link: Link):
+    theta_i = link.theta
+    alpha_i_minus1 = link.alpha
+    d_i = link.d
+    a_i_minus1 = link.a
+
+    t_1_1 = c(theta_i)
+    t_1_2 = -s(theta_i)
+    t_1_3 = 0.0
+    t_1_4 = a_i_minus1
+
+    t_2_1 = s(theta_i) * c(alpha_i_minus1)
+    t_2_2 = c(theta_i) * c(alpha_i_minus1)
+    t_2_3 = -s(alpha_i_minus1)
+    t_2_4 = -d_i * s(alpha_i_minus1)
+
+    t_3_1 = s(theta_i) * s(alpha_i_minus1)
+    t_3_2 = c(theta_i) * s(alpha_i_minus1)
+    t_3_3 = c(alpha_i_minus1)
+    t_3_4 = d_i * c(alpha_i_minus1)
+
+    t_4_1 = 0.0
+    t_4_2 = 0.0
+    t_4_3 = 0.0
+    t_4_4 = 1.0
+
+    zdh_matrix = sp.Matrix([[t_1_1, t_1_2, t_1_3, t_1_4],
+                            [t_2_1, t_2_2, t_2_3, t_2_4],
+                            [t_3_1, t_3_2, t_3_3, t_3_4],
+                            [t_4_1, t_4_2, t_4_3, t_4_4]])
+
+    return zdh_matrix
+
+
+def calculate_zdh_rotation_speed(previous_rotation_speed: sp.Matrix, zdh_matrix: sp.Matrix,
+                                 state_function=None, time_symbol=None) -> sp.Matrix:
+    valid_shape = previous_rotation_speed.shape == tuple([3, 1]) and zdh_matrix.shape == tuple([4, 4])
+    if not valid_shape:
+        raise ValueError('Not valid matrices shapes')
+
+    r = zdh_matrix[0:3, 0:3]
+    rotation_speed = r.transpose() * previous_rotation_speed
+
+    valid_symbols = type(type(state_function)) is sp.function.UndefinedFunction and \
+                    type(time_symbol) is sp.Symbol
+    if valid_symbols:
+        rotation_speed += state_function.diff(time_symbol) * sp.Matrix([0, 0, 1])
+
+    return rotation_speed
+
+
+def calculate_zdh_linear_speed(previous_linear_speed: sp.Matrix, previous_rotation_speed: sp.Matrix,
+                               zdh_matrix: sp.Matrix,
+                               state_function=None, time_symbol=None) -> sp.Matrix:
+    valid_shape = previous_rotation_speed.shape == tuple([3, 1]) and previous_linear_speed.shape == tuple(
+        [3, 1]) and zdh_matrix.shape == tuple([4, 4])
+    if not valid_shape:
+        raise ValueError('Not valid matrices shapes')
+
+    r = zdh_matrix[0:3, 0:3]
+    l = zdh_matrix[0:3, -1]
+    linear_speed = r.transpose() * (previous_linear_speed + previous_rotation_speed.cross(l))
+
+    valid_symbols = type(type(state_function)) is sp.function.UndefinedFunction and \
+                    type(time_symbol) is sp.Symbol
+    if valid_symbols:
+        linear_speed += state_function.diff(time_symbol) * sp.Matrix([0, 0, 1])
+
+    return linear_speed
 
 
 def calculate_kinetic_energy(rotation_speed: sp.Matrix, linear_speed: sp.Matrix,
-                             inertial_tensor: sp.Matrix, mass_cords: sp.Matrix, mass):
+                             link: Link):
+    mass_cords = link.mass_center
+    inertial_tensor = link.inertial_tensor
+    mass = link.mass
     valid_shape = rotation_speed.shape == tuple([3, 1]) and linear_speed.shape == tuple([3, 1]) and \
                   inertial_tensor.shape == tuple([3, 3]) and mass_cords.shape == tuple([3, 1])
     if not valid_shape:
@@ -14,7 +93,9 @@ def calculate_kinetic_energy(rotation_speed: sp.Matrix, linear_speed: sp.Matrix,
     return kinetic_energy
 
 
-def calculate_potential_energy(mass, gravity: sp.Matrix, zdh_matrix: sp.Matrix, mass_cords: sp.Matrix):
+def calculate_potential_energy(gravity: sp.Matrix, zdh_matrix: sp.Matrix, link: Link):
+    mass_cords = link.mass_center
+    mass = link.mass
     valid_shape = gravity.shape == tuple([3, 1]) and zdh_matrix.shape == tuple([4, 4]) and \
                   mass_cords.shape == tuple([3, 1])
     if not valid_shape:
@@ -82,103 +163,3 @@ def calculate_gravitation_vector(potential_energy, state_coordinates: sp.Matrix,
         gravitation_vector[i] = potential_energy.diff(state_coordinates[i])
 
     return gravitation_vector
-
-
-def calculate_zdh_rotation_speed(previous_rotation_speed: sp.Matrix, zdh_matrix: sp.Matrix,
-                                 state_function=None, time_symbol=None) -> sp.Matrix:
-    valid_shape = previous_rotation_speed.shape == tuple([3, 1]) and zdh_matrix.shape == tuple([4, 4])
-    if not valid_shape:
-        raise ValueError('Not valid matrices shapes')
-
-    r = zdh_matrix[0:3, 0:3]
-    rotation_speed = r.transpose() * previous_rotation_speed
-
-    valid_symbols = type(type(state_function)) is sp.function.UndefinedFunction and \
-                    type(time_symbol) is sp.Symbol
-    if valid_symbols:
-        rotation_speed += state_function.diff(time_symbol) * sp.Matrix([0, 0, 1])
-
-    return rotation_speed
-
-
-def calculate_zdh_linear_speed(previous_linear_speed: sp.Matrix, previous_rotation_speed: sp.Matrix,
-                               zdh_matrix: sp.Matrix,
-                               state_function=None, time_symbol=None) -> sp.Matrix:
-    valid_shape = previous_rotation_speed.shape == tuple([3, 1]) and previous_linear_speed.shape == tuple(
-        [3, 1]) and zdh_matrix.shape == tuple([4, 4])
-    if not valid_shape:
-        raise ValueError('Not valid matrices shapes')
-
-    r = zdh_matrix[0:3, 0:3]
-    l = zdh_matrix[0:3, -1]
-    linear_speed = r.transpose() * (previous_linear_speed + previous_rotation_speed.cross(l))
-
-    valid_symbols = type(type(state_function)) is sp.function.UndefinedFunction and \
-                    type(time_symbol) is sp.Symbol
-    if valid_symbols:
-        linear_speed += state_function.diff(t) * sp.Matrix([0, 0, 1])
-
-    return linear_speed
-
-
-def calculate_zdh_matrix(theta_i, alpha_i_minus1, a_i_minus1, d_i):
-    t_1_1 = c(theta_i)
-    t_1_2 = -s(theta_i)
-    t_1_3 = 0.0
-    t_1_4 = a_i_minus1
-
-    t_2_1 = s(theta_i) * c(alpha_i_minus1)
-    t_2_2 = c(theta_i) * c(alpha_i_minus1)
-    t_2_3 = -s(alpha_i_minus1)
-    t_2_4 = -d_i * s(alpha_i_minus1)
-
-    t_3_1 = s(theta_i) * s(alpha_i_minus1)
-    t_3_2 = c(theta_i) * s(alpha_i_minus1)
-    t_3_3 = c(alpha_i_minus1)
-    t_3_4 = d_i * c(alpha_i_minus1)
-
-    t_4_1 = 0.0
-    t_4_2 = 0.0
-    t_4_3 = 0.0
-    t_4_4 = 1.0
-
-    zdh_matrix = sp.Matrix([[t_1_1, t_1_2, t_1_3, t_1_4],
-                            [t_2_1, t_2_2, t_2_3, t_2_4],
-                            [t_3_1, t_3_2, t_3_3, t_3_4],
-                            [t_4_1, t_4_2, t_4_3, t_4_4]])
-
-    return zdh_matrix
-
-
-def s(value):
-    if type(type(value)) == sp.function.UndefinedFunction:
-        return sp.sin(value)
-    elif type(value) == float:
-        temp_trigonometry_value = sp.sin(value).evalf()
-        if 0.9999 < temp_trigonometry_value:
-            return 1.0
-        elif -0.0001 < temp_trigonometry_value < 0.0001:
-            return 0.0
-        elif temp_trigonometry_value < -0.9999:
-            return -1.0
-        else:
-            return temp_trigonometry_value
-    else:
-        raise ValueError('bad value was passed to the function')
-
-
-def c(value):
-    if type(type(value)) == sp.function.UndefinedFunction:
-        return sp.cos(value)
-    elif type(value) == float:
-        temp_trigonometry_value = sp.cos(value).evalf()
-        if 0.9999 < temp_trigonometry_value:
-            return 1.0
-        elif -0.0001 < temp_trigonometry_value < 0.0001:
-            return 0.0
-        elif temp_trigonometry_value < -0.9999:
-            return -1.0
-        else:
-            return temp_trigonometry_value
-    else:
-        return None
