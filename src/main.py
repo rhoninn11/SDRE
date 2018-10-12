@@ -14,21 +14,25 @@ q1 = sp.Function('q1')(t)
 q2 = sp.Function('q2')(t)
 q3 = sp.Function('q3')(t)
 
-a1 = sp.Function('a1')(t)
-a2 = sp.Function('a2')(t)
+a2 = sp.Symbol('a2')
+a3 = sp.Symbol('a3')
 
-c1 = sp.Matrix([0, 0, sp.Symbol('c1z')])
-c2 = sp.Matrix([0, 0, sp.Symbol('c2z')])
-c3 = sp.Matrix([0, 0, sp.Symbol('c3z')])
+d1 = sp.Symbol('d1')
+
+c1 = sp.Matrix([0, 0, sp.Symbol('c_{1z}')])
+c2 = sp.Matrix([sp.Symbol('c_{2z}'), 0, 0])
+c3 = sp.Matrix([sp.Symbol('c_{3z}'), 0, 0])
 # theta, alpha , a , d
-link1 = Link(q1, 0.0, 0.0, 0.0, 1, c1)
-link2 = Link(q2, -math.pi/2.0, 0.0, 0.0, 2, c2)
-link3 = Link(0.0, 0.0, q1, 0.0, 3, c3)
+link1 = Link(q1, 0.0, 0.0, d1, 1, c1)
+link2 = Link(q2, -math.pi / 2.0, 0.0, 0.0, 2, c2)
+link3 = Link(q3, 0.0, a2, 0.0, 3, c3)
+link4 = Link(0.0, 0.0, a3, 0.0, 4)
 
 my_robot = Robot(t)
 my_robot.add_link(link1)
 my_robot.add_link(link2)
 my_robot.add_link(link3)
+my_robot.add_link(link4)
 
 my_robot.calculate_dynamics()
 
@@ -39,6 +43,8 @@ my_robot.print_veocitioes()
 
 my_robot.print_dynamics()
 
-M = my_robot.M
+my_robot.print_to_latex()
 
-sp.pprint(M[0,0].diff(q2))
+my_robot.print_M_elements_to_latex()
+my_robot.print_C_elements_to_latex()
+my_robot.print_G_elements_to_latex()

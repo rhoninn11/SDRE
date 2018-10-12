@@ -2,7 +2,7 @@ import sympy as sp
 
 
 def s(value):
-    if type(type(value)) == sp.function.UndefinedFunction:
+    if type(type(value)) == sp.function.UndefinedFunction or type(value) == sp.Symbol:
         return sp.sin(value)
     elif type(value) == float:
         temp_trigonometry_value = sp.sin(value).evalf()
@@ -19,7 +19,7 @@ def s(value):
 
 
 def c(value):
-    if type(type(value)) == sp.function.UndefinedFunction:
+    if type(type(value)) == sp.function.UndefinedFunction or type(value) == sp.Symbol:
         return sp.cos(value)
     elif type(value) == float:
         temp_trigonometry_value = sp.cos(value).evalf()

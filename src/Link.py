@@ -23,9 +23,9 @@ class Link:
         self.d = d
         self.a = a
         self.mass = sp.Symbol('m' + str(i))
-        self.Ixx = sp.Symbol('I' + str(i) + 'xx')
-        self.Iyy = sp.Symbol('I' + str(i) + 'yy')
-        self.Izz = sp.Symbol('I' + str(i) + 'zz')
+        self.Ixx = sp.Symbol('I_{' + str(i) + 'xx}')
+        self.Iyy = sp.Symbol('I_{' + str(i) + 'yy}')
+        self.Izz = sp.Symbol('I_{' + str(i) + 'zz}')
         self.inertial_tensor = sp.Matrix([[self.Ixx, 0, 0], [0, self.Iyy, 0], [0, 0, self.Izz]])
         if type(mass_center) == sp.Matrix:
             self.mass_center = mass_center

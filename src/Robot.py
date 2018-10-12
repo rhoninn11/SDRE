@@ -1,5 +1,6 @@
 import math
 from robotlib import *
+from sympy.printing.latex import print_latex
 
 
 class Robot:
@@ -142,3 +143,54 @@ class Robot:
         for i in range(0, len(self.velocities)):
             print('-------------------v ' + str(i) + ' in ' + str(i) + '------------------------')
             sp.pprint(self.velocities[i])
+
+    def print_to_latex(self):
+        f = open('robot.tex', '+w')
+        f.write('\\documentclass[10]{article}\n')
+        f.write('\\usepackage{amsmath}\n')
+        f.write('\\usepackage[paperheight = 11cm, paperwidth = 500cm]{geometry}\n')
+        f.write('\\begin{document}\n')
+        f.write('------------------------Mass matrix---------------------------\\\\\n')
+        f.write('\\\\$')
+        f.write(sp.latex(self.M))
+        f.write('$\\\\\n')
+        f.write('------------------------Corioliss matrix---------------------------\\\\\n')
+        f.write('\\\\$')
+        f.write(sp.latex(self.C))
+        f.write('$\\\\\n')
+        f.write('------------------------Gravitation vector---------------------------\\\\\n')
+        f.write('\\\\$')
+        f.write(sp.latex(self.G))
+        f.write('$\\\\\n')
+        f.write('\\end{document}\n')
+        f.close()
+
+    def print_M_elements_to_latex(self):
+        for i in range(0, self.links_number):
+            for j in range(0, self.links_number):
+                print('M-element', i + 1, j + 1, '--------------------------')
+                sting_latex = sp.latex(self.M[i, j])
+                print(type(sting_latex))
+                sting_latex.replace('\left', '')
+                sting_latex.replace('\right', '')
+                print(sting_latex)
+                print('------------------------------------------')
+
+    def print_C_elements_to_latex(self):
+        for i in range(0, self.links_number):
+            for j in range(0, self.links_number):
+                print('C-element', i + 1, j + 1, '--------------------------')
+                sting_latex = sp.latex(self.C[i, j])
+                sting_latex.replace('\left', '')
+                sting_latex.replace('\right', '')
+                print(sting_latex)
+                print('------------------------------------------')
+
+    def print_G_elements_to_latex(self):
+        for i in range(0, self.links_number):
+            print('G-element', i + 1, '--------------------------')
+            sting_latex = sp.latex(self.G[i])
+            sting_latex.replace('\left', '')
+            sting_latex.replace('\right', '')
+            print(sting_latex)
+            print('----------------------------------------')
