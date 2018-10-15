@@ -52,4 +52,6 @@ my_robot.print_dynamics()
 # my_robot.print_C_elements_to_latex()
 # my_robot.print_G_elements_to_latex()
 
-my_robot.insert_cords_values()
+sim = my_robot.setup_simulation()
+sim.simulate(sp.Matrix([1.0, 1.0, 1.0]), sp.Matrix([2.0, 2.0, 2.0]))
+
