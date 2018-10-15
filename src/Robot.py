@@ -4,7 +4,8 @@ from sympy.printing.latex import print_latex
 
 
 class Robot:
-    g = sp.Symbol('g')
+    # g = sp.Symbol('g')
+    g = -10
     t = 0
 
     gravity = sp.Matrix([0, 0, g])
@@ -194,3 +195,47 @@ class Robot:
             sting_latex.replace('\right', '')
             print(sting_latex)
             print('----------------------------------------')
+
+    def insert_cords_values(self):
+
+        x1 = [sp.Function('x11')(self.t),sp.Function('x12')(self.t),sp.Function('x13')(self.t)]
+        x2 =  x1_prim = [sp.Function('x21')(self.t),sp.Function('x22')(self.t),sp.Function('x23')(self.t)]
+        M_obliczeniowa = 0
+        C_obliczeniowa = 0
+        G_obliczeniowa = 0
+        for i in range(len(self.cords_list)):
+            if i is 0:
+                M_obliczeniowa = self.M.subs(self.cords_list[i],x1[i])
+                C_obliczeniowa = self.C.subs(self.cords_prim_list[i],x2[i])
+                C_obliczeniowa = C_obliczeniowa.subs(self.cords_list[i],x1[i])
+                G_obliczeniowa = self.G.subs(self.cords_list[i],x1[i])
+            else:
+                M_obliczeniowa = M_obliczeniowa.subs(self.cords_list[i], x1[i])
+                C_obliczeniowa = C_obliczeniowa.subs(self.cords_prim_list[i],x2[i])
+                C_obliczeniowa = C_obliczeniowa.subs(self.cords_list[i],x1[i])
+                G_obliczeniowa = G_obliczeniowa.subs(self.cords_list[i], x1[i])
+
+        #to mamy macxierz mas i C i G gotową
+
+        sp.pprint(M_obliczeniowa)
+        print('------')
+        sp.pprint(C_obliczeniowa)
+        print('------')
+        sp.pprint(G_obliczeniowa)
+        print('------')
+
+        x1_values = [0.5,0.6,0.8]
+        x2_values = [1.2,0.1,0.6]
+
+        for i in range(len(self.cords_list)):
+            M_obliczeniowa = M_obliczeniowa.subs(x1[i],x1_values[i])
+            C_obliczeniowa = C_obliczeniowa.subs(x2[i],x2_values[i])
+            C_obliczeniowa = C_obliczeniowa.subs(x1[i],x1_values[i])
+            G_obliczeniowa = G_obliczeniowa.subs(x1[i],x1_values[i])
+
+        sp.pprint(M_obliczeniowa)
+        print('------')
+        sp.pprint(C_obliczeniowa)
+        print('------')
+        sp.pprint(G_obliczeniowa)
+        print('------')
